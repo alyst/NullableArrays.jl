@@ -1,5 +1,9 @@
 using Compat
 
+@compat AbstractNullableArray{T, N} = AbstractArray{Nullable{T}, N}
+@compat AbstractNullableVector{T} = AbstractNullableArray{T, 1}
+@compat AbstractNullableMatrix{T} = AbstractNullableArray{T, 2}
+
 # === Design Notes ===
 #
 # `NullableArray{T, N}` is a struct-of-arrays representation of
