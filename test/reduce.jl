@@ -80,12 +80,16 @@ module TestReduce
 
         @test isequal(extrema(X), (Nullable(minimum(A)), Nullable(maximum(A))))
         @test isequal(extrema(Y), (Nullable{Float64}(), Nullable{Float64}()))
-        v1 = extrema(Y, skipnull=true)
-        v2 = extrema(B)
-        @test v1[1].value == v2[1]
-        @test !isnull(v1[1])
-        @test v1[2].value == v2[2]
-        @test !isnull(v1[2])
+        if !allnull
+            v1 = extrema(Y, skipnull=true)
+            v2 = extrema(B)
+            @test v1[1].value == v2[1]
+            @test !isnull(v1[1])
+            @test v1[2].value == v2[2]
+            @test !isnull(v1[2])
+        else
+            @test_throws ArgumentError extrema(Y, skipnull=true)
+        end
 
         H = rand(Bool, N)
         G = H[find(x->!x, M)]

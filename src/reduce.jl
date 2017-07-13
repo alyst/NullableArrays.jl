@@ -222,13 +222,12 @@ function Base.extrema{T}(X::NullableArray{T}; skipnull::Bool = false)
     vmin = Nullable{T}()
     vmax = Nullable{T}()
     @inbounds for i in 1:length(X)
-        x = X.values[i]
-        null = X.isnull[i]
-        if skipnull && null
+        if X.isnull[i]
+            skipnull || return (Nullable{T}(), Nullable{T}())
             continue
-        elseif null
-            return (Nullable{T}(), Nullable{T}())
-        elseif isnull(vmax) # Equivalent to isnull(vmin)
+        end
+        x = X.values[i]
+        if isnull(vmax) # Equivalent to isnull(vmin)
             vmax = vmin = Nullable(x)
         elseif x > vmax.value
             vmax = Nullable(x)
@@ -236,5 +235,6 @@ function Base.extrema{T}(X::NullableArray{T}; skipnull::Bool = false)
             vmin = Nullable(x)
         end
     end
+    isnull(vmax) && throw(ArgumentError("collection must contain non-null elements"))
     return (vmin, vmax)
 end
